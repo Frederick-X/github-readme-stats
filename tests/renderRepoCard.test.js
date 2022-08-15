@@ -28,8 +28,11 @@ describe("Test renderRepoCard", () => {
 
     expect(header).toHaveTextContent("convoychat");
     expect(header).not.toHaveTextContent("anuraghazra");
-    expect(document.getElementsByClassName("description")[0]).toHaveTextContent(
-      "Help us take over the world! React + TS + GraphQL Chat App",
+    expect(document.getElementsByClassName("description")[0].children[0].textContent).toBe(
+      "Help us take over the world! React + TS + GraphQL",
+    );
+    expect(document.getElementsByClassName("description")[0].children[1].textContent).toBe(
+      "Chat App",
     );
     expect(queryByTestId(document.body, "stargazers")).toHaveTextContent("38k");
     expect(queryByTestId(document.body, "forkcount")).toHaveTextContent("100");
@@ -62,6 +65,21 @@ describe("Test renderRepoCard", () => {
     );
   });
 
+  it("should render correctly complex description", () => {
+    document.body.innerHTML = renderRepoCard({
+      ...data_repo.repository,
+      description: "The C based gRPC (C++, Python, Ruby, Objective-C, PHP, C#)",
+    });
+
+    expect(document.getElementsByClassName("description")[0].children[0].textContent).toBe(
+      "The C based gRPC (C++, Python, Ruby, Objective-C,",
+    );
+
+    expect(document.getElementsByClassName("description")[0].children[1].textContent).toBe(
+      "PHP, C#)",
+    );
+  });
+
   it("should trim description", () => {
     document.body.innerHTML = renderRepoCard({
       ...data_repo.repository,
@@ -75,7 +93,11 @@ describe("Test renderRepoCard", () => {
 
     expect(
       document.getElementsByClassName("description")[0].children[1].textContent,
-    ).toBe("English-language pangram—a sentence that contains all");
+    ).toBe("English-language pangram—a sentence that");
+
+    expect(
+      document.getElementsByClassName("description")[0].children[2].textContent,
+    ).toBe("contains all of the letters of the English alphabet");
 
     // Should not trim
     document.body.innerHTML = renderRepoCard({
